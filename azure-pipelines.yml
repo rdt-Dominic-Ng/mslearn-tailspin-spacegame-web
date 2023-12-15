@@ -2,7 +2,7 @@ trigger:
 - '*'
 
 pool:
-  vmImage: Default
+  vmImage: 'Azure Pipelines'
   demands:
   - npm
 
