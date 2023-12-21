@@ -2,9 +2,7 @@ trigger:
 - '*'
 
 pool:
-  vmImage: 'ubuntu-20.04'
-  demands:
-  - npm
+  name: 'Default'
 
 variables:
   buildConfiguration: 'Release'
@@ -26,15 +24,20 @@ steps:
   inputs:
     verbose: false
 
-- script: './node_modules/.bin/node-sass $(wwwrootDir) --output $(wwwrootDir)'
-  displayName: 'Compile Sass assets'
-
 - task: gulp@1
   displayName: 'Run gulp tasks'
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
   workingDirectory: $(wwwrootDir)
+
+- task: NuGetCommand@2
+  displayName: 'Restore project dependencies'
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build the project - $(buildConfiguration)'
